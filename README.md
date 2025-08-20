@@ -17,10 +17,10 @@
 - [ ] Have a good UI for 
 	- [ ] Detailed Notes.
 	- [ ] Edit Notes.
-	- [ ] Note Card.
-	- [ ] Add edit notes.
+	- [X] Note Card.
+	- [X] Add edit notes.
 	- [ ] Have a setting screen.
-- [ ] Make Task Objects.
+- [X] Make Task Objects.
 - [ ] Save data locally with sqflite.
 - [ ] Setup reminders.
 	- [ ] Get Asset Audio Path.

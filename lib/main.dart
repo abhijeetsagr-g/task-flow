@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'package:task_flow/screens/home.dart';
 import 'package:task_flow/screens/new_note.dart';
+import 'package:task_flow/screens/task_screen.dart';
 import 'package:task_flow/tasks.dart';
 
 void main() {
@@ -23,10 +25,12 @@ class Main extends StatefulWidget {
 class _MainState extends State<Main> {
   @override
   void initState() {
+    final taskList = Provider.of<TaskList>(context, listen: false);
+    taskList.loadTask();
     super.initState();
   }
 
-  List<Widget> screen = [Center(child: Text("Working")), Home(), NewNote()];
+  List<Widget> screen = [TaskScreen(), Home(), NewNote()];
   int _currentScreen = 1;
 
   @override

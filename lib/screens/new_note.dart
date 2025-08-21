@@ -24,7 +24,6 @@ class NewNoteState extends State<NewNote> {
     if (picked != null) {
       setState(() {
         reminderTime = picked;
-        print(reminderTime?.format(context));
       });
     }
   }
@@ -40,7 +39,6 @@ class NewNoteState extends State<NewNote> {
     );
   }
 
-  // TODO:  SAVE
   void onSave() {
     if (_titleController.text.isEmpty) {
       showSnackbar("Title is empty, nothing is saved", Colors.red);
@@ -48,11 +46,20 @@ class NewNoteState extends State<NewNote> {
     }
     final String title = _titleController.text;
     final String description = _descriptionController.text;
-    final String time = reminderTime!.format(context);
+    final String time = reminderTime != null
+        ? reminderTime!.format(context)
+        : "";
 
-    Task newTask = Task(title, description, time, false);
+    final taskList = Provider.of<TaskList>(context, listen: false);
 
-    Provider.of<TaskList>(context, listen: false).addItems(newTask);
+    Task newTask = Task(
+      taskList.tasks.length + 1,
+      title,
+      description,
+      time,
+      false,
+    );
+    taskList.addItems(newTask);
 
     if (reminderTime != null) {
       showSnackbar("Saved and added the reminder", Colors.green);

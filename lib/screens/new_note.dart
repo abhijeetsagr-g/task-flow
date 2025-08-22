@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:task_flow/tasks.dart';
+import 'package:task_flow/features/features/snackbar.dart';
+import 'package:task_flow/features/notification_service.dart';
+import 'package:task_flow/features/tasks.dart';
 
 class NewNote extends StatefulWidget {
   const NewNote({super.key});
@@ -13,43 +16,70 @@ class NewNoteState extends State<NewNote> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
-  TimeOfDay? reminderTime;
+  DateTime? reminderDateTime;
 
-  Future<void> pickTime() async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-
-    if (picked != null) {
-      setState(() {
-        reminderTime = picked;
-      });
-    }
+  String formatReminderDateTime(DateTime dateTime) {
+    final DateFormat formatter = DateFormat("d MMMM ''yy h:mm a");
+    return formatter.format(dateTime);
   }
 
-  void showSnackbar(String text, Color bgColor) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(text),
-        backgroundColor: bgColor,
-        elevation: 10,
-        duration: Duration(milliseconds: 500),
+  Future<void> pickDateTime() async {
+    // Pick a date
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2050),
+    );
+
+    if (pickedDate == null) return; // user cancelled
+
+    // Step 2: Pick a time
+    TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(
+        hour: TimeOfDay.now().hour + 1,
+        minute: TimeOfDay.now().minute,
       ),
     );
+
+    if (pickedTime == null) return; // user cancelled
+
+    if (pickedTime.isBefore(TimeOfDay.now())) {
+      pickedTime = null;
+      pickedDate = null;
+      showSnackbar(
+        context,
+        "You trying to set a time in the past",
+        Colors.blueAccent,
+      );
+      return;
+    }
+
+    // Merge both into a DateTime
+    final DateTime pickedDateTime = DateTime(
+      pickedDate.year,
+      pickedDate.month,
+      pickedDate.day,
+      pickedTime.hour,
+      pickedTime.minute,
+    );
+
+    setState(() {
+      reminderDateTime = pickedDateTime;
+    });
   }
 
   void onSave() {
     if (_titleController.text.isEmpty) {
-      showSnackbar("Title is empty, nothing is saved", Colors.red);
+      showSnackbar(context, "Title is empty, nothing is saved", Colors.red);
       return;
     }
     final String title = _titleController.text;
     final String description = _descriptionController.text;
-    final String time = reminderTime != null
-        ? reminderTime!.format(context)
+    final String time = reminderDateTime != null
+        ? formatReminderDateTime(reminderDateTime!)
         : "";
-
     final taskList = Provider.of<TaskList>(context, listen: false);
 
     Task newTask = Task(
@@ -61,17 +91,24 @@ class NewNoteState extends State<NewNote> {
     );
     taskList.addItems(newTask);
 
-    if (reminderTime != null) {
-      showSnackbar("Saved and added the reminder", Colors.green);
+    if (reminderDateTime != null) {
+      NotificationService.showNotification(
+        index: taskList.tasks.length + 1,
+        title: title,
+        body: "Reminder set for $time",
+      );
+
+      showSnackbar(context, "Saved and added the reminder", Colors.green);
     } else {
       showSnackbar(
+        context,
         "Saved without a reminder, you can change it from the note",
         Colors.deepOrange,
       );
     }
     _titleController.clear();
     _descriptionController.clear();
-    reminderTime = null;
+    reminderDateTime = null;
   }
 
   @override
@@ -133,7 +170,7 @@ class NewNoteState extends State<NewNote> {
               Text("Reminder"),
               SizedBox(height: 10),
               InkWell(
-                onTap: () => pickTime(),
+                onTap: () => pickDateTime(),
                 child: Container(
                   padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                   decoration: BoxDecoration(
@@ -148,15 +185,16 @@ class NewNoteState extends State<NewNote> {
                         //padding: EdgeInsets.all(5),
                         height: 35,
                         child: Text(
-                          reminderTime != null
-                              ? reminderTime!.format(context)
-                              : "Pick a time...",
+                          reminderDateTime != null
+                              ? formatReminderDateTime(reminderDateTime!)
+                              : "Set a alarm",
+
                           style: TextStyle(fontSize: 16),
                         ),
                       ),
                       IconButton(
                         onPressed: () => setState(() {
-                          reminderTime = null;
+                          reminderDateTime = null;
                         }),
                         icon: Icon(Icons.delete),
                       ),

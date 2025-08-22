@@ -1,6 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:task_flow/tasks.dart';
+import 'package:task_flow/features/tasks.dart';
 
 class DatabaseHelper {
   // This makes sure we only ever have ONE DatabaseHelper.
@@ -25,7 +25,7 @@ class DatabaseHelper {
     return _database!;
   }
 
-  _initDatabase() async {
+  Future<Database> _initDatabase() async {
     String path = join(await getDatabasesPath(), 'tasks.db');
 
     // Open the database and create the table if it doesn't exist.

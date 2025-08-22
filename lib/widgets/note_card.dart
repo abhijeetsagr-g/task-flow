@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:task_flow/features/alarm_service.dart';
+import 'package:task_flow/features/tasks.dart';
 import 'package:task_flow/screens/note_detail_page.dart';
-import 'package:task_flow/tasks.dart';
 
 class NoteCard extends StatelessWidget {
   const NoteCard({super.key, required this.task});
@@ -38,7 +39,14 @@ class NoteCard extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      AlarmService().scheduleAlarm(
+                        uniqueId: task.id!,
+                        time: task.reminderTime,
+                        title: task.title,
+                        body: task.description,
+                      );
+                    },
                     icon: const Icon(
                       Icons.notifications_active_outlined,
                       color: Colors.cyan,

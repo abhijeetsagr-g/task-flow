@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:task_flow/tasks.dart';
+import 'package:task_flow/features/tasks.dart';
+
 import 'package:task_flow/widgets/note_card.dart';
 
 class Home extends StatefulWidget {

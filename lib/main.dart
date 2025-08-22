@@ -1,12 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:task_flow/features/notification_service.dart';
+import 'package:task_flow/features/tasks.dart';
 import 'package:task_flow/screens/home.dart';
 import 'package:task_flow/screens/new_note.dart';
 import 'package:task_flow/screens/task_screen.dart';
-import 'package:task_flow/tasks.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-void main() {
+Future<void> requestPermission() async {
+  if (await Permission.notification.isDenied) {
+    await Permission.notification.request();
+  }
+
+  if (await Permission.scheduleExactAlarm.isDenied) {
+    await Permission.scheduleExactAlarm.request();
+  }
+}
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await requestPermission();
+  await NotificationService.init();
   runApp(
     ChangeNotifierProvider(
       create: (BuildContext context) => TaskList(),
@@ -45,10 +59,7 @@ class _MainState extends State<Main> {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         actions: [
-          IconButton(
-            onPressed: () => print("Dark mode"),
-            icon: Icon(Icons.dark_mode_outlined),
-          ),
+          IconButton(onPressed: () {}, icon: Icon(Icons.dark_mode_outlined)),
         ],
       ),
       body: screen[_currentScreen],

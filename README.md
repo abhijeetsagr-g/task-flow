@@ -7,23 +7,25 @@
 ---
 
 ## 🎯 Objectives
-- [ ] Have a good UI/UX.
-- [ ] Have proper Task objects.
-- [ ] Save it locally.
+- [X] Have a good UI/UX.
+- [X] Have proper Task objects.
+- [X] Save it locally.
 - [ ] Setup reminders.
 
+---
+
 ## 📂 Features
-### MVP (Must-have)
-- [ ] Have a good UI for 
-	- [ ] Detailed Notes.
-	- [ ] Edit Notes.
-	- [X] Note Card.
-	- [X] Add edit notes.
-	- [ ] Have a setting screen.
-- [X] Make Task Objects.
-- [ ] Save data locally with sqflite.
+### ✅ MVP (Must-have)
+- [x] Have a good UI for
+	- [x] Add edit notes.
+	- [x] Detailed Notes.
+	- [x] Edit Notes.
+	- [x] Note Card.
+- [x] Make Task Objects.
+- [x] Save data locally with sqflite.
 - [ ] Setup reminders.
 	- [ ] Get Asset Audio Path.
 
 ### 💡 Optional / Future
 - [ ] Dark Mode
+
